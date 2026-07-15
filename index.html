@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gabriel Feliz — Desenvolvedor Full Stack</title>
+<meta name="description" content="Portfólio de Gabriel Henrique Santos Feliz, Desenvolvedor Full Stack (Google Apps Script, Python, SQL).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0614;
+    --bg-2: #150a2b;
+    --panel: rgba(255,255,255,0.035);
+    --panel-border: rgba(255,255,255,0.09);
+    --line: #241238;
+    --purple: #a855f7;
+    --purple-bright: #d0a3ff;
+    --purple-deep: #6d28d9;
+    --violet: #7c3aed;
+    --text: #f5f0ff;
+    --muted: #ab9bc9;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ambient glow field */
+  .glow{
+    position:fixed; border-radius:50%; filter:blur(90px); pointer-events:none; z-index:0;
+  }
+  .glow-1{width:520px; height:520px; background:radial-gradient(circle, rgba(168,85,247,0.35), transparent 70%); top:-140px; right:-120px;}
+  .glow-2{width:460px; height:460px; background:radial-gradient(circle, rgba(124,58,237,0.28), transparent 70%); top:900px; left:-160px;}
+  .glow-3{width:500px; height:500px; background:radial-gradient(circle, rgba(168,85,247,0.22), transparent 70%); bottom:0; right:-140px;}
+
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px; position:relative; z-index:1;}
+
+  ::selection{background:var(--purple-deep); color:#fff;}
+
+  /* NAV */
+  header{position:sticky; top:0; z-index:50; backdrop-filter:blur(14px); background:rgba(10,6,20,0.7); border-bottom:1px solid var(--line);}
+  nav.wrap{display:flex; align-items:center; justify-content:space-between; padding:20px 32px;}
+  .logo{font-family:var(--mono); font-size:15px; display:flex; align-items:center; gap:8px;}
+  .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--purple); box-shadow:0 0 14px var(--purple);}
+  .nav-links{display:flex; gap:34px; font-size:14px; color:var(--muted);}
+  .nav-links a:hover{color:var(--text);}
+  .nav-cta{font-family:var(--mono); font-size:13px; border:1px solid var(--purple-deep); padding:8px 16px; border-radius:100px; color:var(--purple-bright);}
+  .nav-cta:hover{background:var(--purple-deep); color:#fff;}
+
+  /* GLASS CARD BASE */
+  .glass{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:18px;
+    backdrop-filter:blur(16px);
+  }
+
+  /* HERO */
+  .hero{padding:88px 0 60px; display:grid; grid-template-columns:1.15fr 0.85fr; gap:48px; align-items:center; position:relative;}
+  .quote-bubble{
+    display:inline-flex; align-items:center; gap:12px; padding:10px 18px 10px 10px;
+    margin-bottom:28px;
+  }
+  .quote-bubble .avatar{
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg, var(--purple), var(--violet));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-weight:700; font-size:15px;
+  }
+  .quote-bubble span{font-size:13px; color:var(--muted); font-style:italic;}
+
+  h1.title{font-family:var(--display); font-weight:800; font-size:clamp(38px,5vw,62px); line-height:1.05; letter-spacing:-1px; margin-bottom:22px;}
+  h1.title .line2{
+    background:linear-gradient(120deg, var(--purple-bright), var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .lede{color:var(--muted); font-size:16.5px; max-width:470px; margin-bottom:32px;}
+
+  .hero-actions{margin-bottom:40px;}
+  .btn{font-family:var(--mono); font-size:14px; padding:13px 26px; border-radius:100px; display:inline-flex; align-items:center; gap:8px; transition:all .2s;}
+  .btn-solid{background:linear-gradient(135deg, var(--purple), var(--purple-deep)); color:#fff; box-shadow:0 10px 30px -8px rgba(168,85,247,0.55);}
+  .btn-solid:hover{transform:translateY(-2px); box-shadow:0 14px 34px -6px rgba(168,85,247,0.75);}
+
+  .hero-stats{display:flex; gap:0;}
+  .hero-stats .stat{padding:16px 28px 16px 0; border-right:1px solid var(--line); margin-right:28px;}
+  .hero-stats .stat:last-child{border:none; margin:0;}
+  .hero-stats strong{display:block; font-family:var(--display); font-size:22px; font-weight:700; color:var(--purple-bright);}
+  .hero-stats span{font-family:var(--mono); font-size:11px; color:var(--muted);}
+
+  /* HERO VISUAL — orbit system */
+  .orbit-stage{position:relative; height:440px; display:flex; align-items:center; justify-content:center;}
+  .core-orb{
+    width:190px; height:190px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--purple-bright), var(--purple-deep) 60%, #2a0f52 100%);
+    box-shadow:0 0 90px rgba(168,85,247,0.55), inset -20px -20px 60px rgba(0,0,0,0.35);
+    position:relative; z-index:2;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .core-orb .code{font-family:var(--mono); font-size:13px; color:#fff; opacity:.92; text-align:center;}
+  .ring{position:absolute; border:1px solid var(--panel-border); border-radius:50%; z-index:1;}
+  .ring1{width:300px; height:300px; animation:spin 22s linear infinite;}
+  .ring2{width:390px; height:390px; animation:spin 34s linear infinite reverse;}
+  @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .orbit-chip{
+    position:absolute; padding:9px 14px; font-family:var(--mono); font-size:11.5px;
+    display:flex; align-items:center; gap:8px; color:var(--text); z-index:3;
+  }
+  .orbit-chip .ico{width:8px;height:8px;border-radius:50%;}
+  .oc1{top:6%; left:2%;}
+  .oc1 .ico{background:#6ee7c7;}
+  .oc2{bottom:12%; left:-4%;}
+  .oc2 .ico{background:#ffb08a;}
+  .oc3{top:16%; right:0;}
+  .oc3 .ico{background:var(--purple-bright);}
+  .oc4{bottom:2%; right:6%;}
+  .oc4 .ico{background:#7dd3fc;}
+
+  section{padding:80px 0; position:relative; z-index:1;}
+  .section-head{margin-bottom:44px;}
+  .section-num{font-family:var(--mono); font-size:13px; color:var(--purple); margin-bottom:10px;}
+  .section-title{font-family:var(--display); font-size:clamp(26px,3vw,36px); font-weight:700; letter-spacing:-0.5px;}
+  .section-sub{color:var(--muted); max-width:560px; margin-top:12px; font-size:15px;}
+
+  /* ABOUT */
+  #about{border-top:1px solid var(--line);}
+  .about-grid{display:grid; grid-template-columns:1fr 1fr; gap:48px;}
+  .about-card{padding:32px;}
+  .about-card p{color:var(--muted); margin-bottom:16px; font-size:15px;}
+  .about-card p strong{color:var(--text); font-weight:600;}
+  .fact-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .fact-tile{padding:20px; }
+  .fact-tile span{display:block;}
+  .fact-tile .k{font-family:var(--mono); font-size:11px; color:var(--muted); margin-bottom:8px;}
+  .fact-tile .v{font-size:14.5px; font-weight:500;}
+
+  /* SKILLS */
+  .skills-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  .skill-card{padding:26px 22px; transition:transform .2s, border-color .2s;}
+  .skill-card:hover{transform:translateY(-4px); border-color:var(--purple-deep);}
+  .skill-card .orb-mini{width:34px; height:34px; border-radius:50%; background:radial-gradient(circle at 35% 30%, var(--purple-bright), var(--purple-deep)); margin-bottom:14px;}
+  .skill-card h3{font-family:var(--display); font-size:16px; margin-bottom:10px;}
+  .skill-card ul{list-style:none; display:flex; flex-wrap:wrap; gap:8px;}
+  .skill-card li{font-family:var(--mono); font-size:11.5px; color:var(--muted); border:1px solid var(--line); padding:5px 10px; border-radius:100px;}
+
+  /* WORK EXPERIENCE — floating cards */
+  #experience{border-top:1px solid var(--line);}
+  .exp-grid{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:16px;}
+  .exp-card{padding:28px; position:relative; overflow:hidden;}
+  .exp-card .exp-orb{position:absolute; width:120px; height:120px; border-radius:50%; background:radial-gradient(circle, rgba(168,85,247,0.4), transparent 70%); top:-40px; right:-40px; filter:blur(10px);}
+  .exp-card .tag{font-family:var(--mono); font-size:10.5px; color:var(--purple-bright); border:1px solid var(--purple-deep); padding:4px 10px; border-radius:100px; display:inline-block; margin-bottom:16px;}
+  .exp-card h3{font-family:var(--display); font-size:18px; margin-bottom:6px; position:relative; z-index:1;}
+  .exp-card .org{font-size:13px; color:var(--muted); margin-bottom:16px; position:relative; z-index:1;}
+  .exp-card ul{list-style:none; display:flex; flex-direction:column; gap:10px; position:relative; z-index:1;}
+  .exp-card li{position:relative; padding-left:18px; color:var(--muted); font-size:13.5px;}
+  .exp-card li::before{content:"›"; position:absolute; left:0; color:var(--purple);}
+
+  /* PROJECTS — recent works grid */
+  #projects{border-top:1px solid var(--line);}
+  .work-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
+  .work-card{overflow:hidden; position:relative; transition:transform .25s, border-color .25s;}
+  .work-card:hover{transform:translateY(-5px); border-color:var(--purple-deep);}
+  .work-thumb{
+    height:140px; position:relative; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, #1a0e33, #2b1354);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .work-thumb::after{content:""; position:absolute; inset:0; background:radial-gradient(circle at 80% 20%, rgba(168,85,247,0.35), transparent 60%);}
+  .work-thumb .glyph{font-family:var(--mono); font-size:13px; color:var(--purple-bright); z-index:1; letter-spacing:1px;}
+  .work-play{
+    position:absolute; top:14px; right:14px; width:36px; height:36px; border-radius:50%;
+    background:rgba(255,255,255,0.1); border:1px solid var(--panel-border);
+    display:flex; align-items:center; justify-content:center; font-size:13px; z-index:2;
+    transition:background .2s;
+  }
+  .work-card:hover .work-play{background:var(--purple-deep);}
+  .work-body{padding:22px;}
+  .work-body h3{font-family:var(--display); font-size:17px; margin-bottom:4px;}
+  .status-row{display:flex; align-items:center; gap:8px; margin-bottom:12px;}
+  .status{font-family:var(--mono); font-size:10px; padding:3px 9px; border-radius:100px;}
+  .status.done{background:rgba(110,231,199,0.12); color:#6ee7c7;}
+  .status.wip{background:rgba(168,85,247,0.16); color:var(--purple-bright);}
+  .work-body p{color:var(--muted); font-size:13.5px; margin-bottom:14px;}
+  .stack-row{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;}
+  .stack-row span{font-family:var(--mono); font-size:10.5px; color:var(--muted); border:1px solid var(--line); padding:4px 9px; border-radius:100px;}
+  .work-link{font-family:var(--mono); font-size:12.5px; color:var(--purple-bright); display:inline-flex; align-items:center; gap:6px;}
+  .work-link:hover{color:#fff;}
+
+  /* TECHNOLOGIES */
+  #tech{border-top:1px solid var(--line);}
+  .tech-grid{display:grid; grid-template-columns:repeat(6,1fr); gap:36px 24px; justify-items:center;}
+  .tech-item{display:flex; flex-direction:column; align-items:center; gap:16px; transition:transform .2s;}
+  .tech-item:hover{transform:translateY(-4px);}
+  .tech-item img{width:60px; height:60px; object-fit:contain; filter:brightness(0) invert(1);}
+  .tech-item span{font-family:var(--body); font-size:14px; color:var(--text); text-align:center;}
+
+  /* CONTACT */
+  #contact{border-top:1px solid var(--line);}
+  .contact-card{padding:56px; position:relative; overflow:hidden; text-align:center;}
+  .contact-card .exp-orb{position:absolute; width:260px; height:260px; background:radial-gradient(circle, rgba(168,85,247,0.35), transparent 70%); top:-100px; left:50%; transform:translateX(-50%); filter:blur(20px);}
+  .contact-card h2{font-family:var(--display); font-size:clamp(26px,3.4vw,38px); font-weight:700; margin-bottom:14px; position:relative; z-index:1;}
+  .contact-card p{color:var(--muted); max-width:480px; margin:0 auto 32px; position:relative; z-index:1;}
+  .contact-links{display:flex; justify-content:center; gap:14px; flex-wrap:wrap; position:relative; z-index:1;}
+  .btn-ghost{border:1px solid var(--line); color:var(--text);}
+  .btn-ghost:hover{border-color:var(--purple); color:var(--purple-bright);}
+
+  footer{border-top:1px solid var(--line); padding:32px 0; text-align:center; color:var(--muted); font-family:var(--mono); font-size:12.5px; position:relative; z-index:1;}
+
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr; padding-top:52px;}
+    .orbit-stage{height:300px; margin-top:24px;}
+    .about-grid{grid-template-columns:1fr;}
+    .skills-grid{grid-template-columns:1fr 1fr;}
+    .exp-grid{grid-template-columns:1fr;}
+    .work-grid{grid-template-columns:1fr;}
+    .tech-grid{grid-template-columns:repeat(3,1fr); gap:28px 16px;}
+    .nav-links{display:none;}
+    .hero-stats{flex-wrap:wrap; gap:16px;}
+    .contact-card{padding:36px 24px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ring{animation:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="glow glow-1"></div>
+<div class="glow glow-2"></div>
+<div class="glow glow-3"></div>
+
+<header>
+  <nav class="wrap">
+    <div class="logo"><span class="dot"></span> gabriel.dev</div>
+    <div class="nav-links">
+      <a href="#about">Sobre</a>
+      <a href="#skills">Stack</a>
+      <a href="#projects">Projetos</a>
+      <a href="#tech">Tecnologias</a>
+    </div>
+    <a class="nav-cta" href="#contact">Contato →</a>
+  </nav>
+</header>
+
+<main>
+  <section class="hero wrap">
+    <div>
+      <div class="quote-bubble glass">
+        <div class="avatar">GF</div>
+        <span>"Prefiro entregar algo funcionando do que uma spec perfeita."</span>
+      </div>
+      <h1 class="title">Sou Desenvolvedor<br><span class="line2">Full Stack.</span></h1>
+      <p class="lede">Construo Web Apps que resolvem problemas reais de operação — do back-end em Google Apps Script e Python ao front-end em HTML/CSS/JS, com bancos de dados SQL para sustentar tudo isso.</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid" href="https://github.com/GabrielHSFeliz" target="_blank" rel="noopener">Ver no GitHub ↗</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><strong>05</strong><span>PROJETOS PUBLICADOS</span></div>
+        <div class="stat"><strong>03</strong><span>STACKS PRINCIPAIS</span></div>
+        <div class="stat"><strong>Jr</strong><span>EM INÍCIO DE CARREIRA</span></div>
+      </div>
+    </div>
+
+    <div class="orbit-stage">
+      <div class="ring ring2"></div>
+      <div class="ring ring1"></div>
+      <div class="core-orb">
+        <div class="code">&lt;/&gt;<br>whoami</div>
+      </div>
+      <div class="orbit-chip glass oc1"><span class="ico"></span>GAS</div>
+      <div class="orbit-chip glass oc2"><span class="ico"></span>Python</div>
+      <div class="orbit-chip glass oc3"><span class="ico"></span>SQL</div>
+      <div class="orbit-chip glass oc4"><span class="ico"></span>Supabase</div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap about-grid">
+      <div class="about-card glass">
+        <div class="section-num">01 · SOBRE</div>
+        <h2 class="section-title" style="margin-bottom:20px;">Início de carreira, mão na massa.</h2>
+        <p>Sou <strong>desenvolvedor júnior</strong>, ainda no começo da carreira em tecnologia, cursando Análise e Desenvolvimento de Sistemas — mas já saí da teoria e coloquei a mão no código de verdade.</p>
+        <p>Aprendi construindo: desenvolvi <strong>Web Apps que já rodam no Mercado Livre</strong>, usando Google Apps Script, Python e Google Sheets como camada de dados, sempre pensando em interfaces simples para quem usa no dia a dia.</p>
+        <p>Também desenvolvo <strong>apps mobile em Python (KivyMD)</strong> com back-end em Supabase/PostgreSQL. Agora busco minha primeira oportunidade como desenvolvedor, com foco em vagas remotas.</p>
+      </div>
+      <div class="fact-grid">
+        <div class="fact-tile glass"><span class="k">LOCALIZAÇÃO</span><span class="v">Guarulhos, SP</span></div>
+        <div class="fact-tile glass"><span class="k">NÍVEL</span><span class="v">Desenvolvedor Júnior</span></div>
+        <div class="fact-tile glass"><span class="k">FORMAÇÃO</span><span class="v">ADS — Faculdade Impacta</span></div>
+        <div class="fact-tile glass"><span class="k">FOCO</span><span class="v">Full Stack / Remoto</span></div>
+        <div class="fact-tile glass"><span class="k">E-MAIL</span><span class="v">feliz.gabriel785@gmail.com</span></div>
+        <div class="fact-tile glass"><span class="k">GITHUB</span><span class="v">GabrielHSFeliz</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-num">02 · STACK</div>
+        <h2 class="section-title">Ferramentas do dia a dia</h2>
+        <p class="section-sub">Da lógica de negócio ao deploy — o que uso para levar uma ideia da planilha até a produção.</p>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card glass"><div class="orb-mini"></div><h3>Back-end</h3><ul><li>Google Apps Script</li><li>Triggers & Services</li><li>Python 3.12</li></ul></div>
+        <div class="skill-card glass"><div class="orb-mini"></div><h3>Front-end</h3><ul><li>HTML / CSS</li><li>JS Vanilla</li><li>KivyMD</li></ul></div>
+        <div class="skill-card glass"><div class="orb-mini"></div><h3>Dados & Infra</h3><ul><li>Google Sheets</li><li>SQL / PostgreSQL</li><li>Supabase · RLS</li></ul></div>
+        <div class="skill-card glass"><div class="orb-mini"></div><h3>Qualidade</h3><ul><li>pytest</li><li>GitHub Actions</li></ul></div>
+        <div class="skill-card glass"><div class="orb-mini"></div><h3>Plataforma</h3><ul><li>GAS Web App</li><li>GRID</li><li>n8n / webhooks</li></ul></div>
+        <div class="skill-card glass"><div class="orb-mini"></div><h3>Práticas</h3><ul><li>Requisitos com operação</li><li>Entregas incrementais</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-num">03 · PROJETOS</div>
+        <h2 class="section-title">Trabalhos recentes</h2>
+        <p class="section-sub">Projetos publicados no GitHub — do app em produção no Mercado Livre ao app mobile com Supabase.</p>
+      </div>
+      <div class="work-grid">
+
+        <div class="work-card glass">
+          <div class="work-thumb"><span class="glyph">GAS · SHEETS</span><div class="work-play">↗</div></div>
+          <div class="work-body">
+            <h3>Solicitação de Uniformes</h3>
+            <div class="status-row"><span class="status wip">back-end em produção</span></div>
+            <p>API completa em Apps Script (doPost) com auth por token, controle de estoque e migração de front-end para o GRID via proxy n8n.</p>
+            <div class="stack-row"><span>Apps Script</span><span>Sheets</span><span>n8n</span></div>
+            <a class="work-link" href="https://github.com/GabrielHSFeliz/Solicitacao-uniformes" target="_blank" rel="noopener">Ver repositório →</a>
+          </div>
+        </div>
+
+        <div class="work-card glass">
+          <div class="work-thumb"><span class="glyph">PYTHON · KIVY</span><div class="work-play">↗</div></div>
+          <div class="work-body">
+            <h3>uniforme-app (Mobile)</h3>
+            <div class="status-row"><span class="status done">finalizado</span></div>
+            <p>App mobile em KivyMD com login via Supabase Auth, Row Level Security, dashboards nativos e CI com pytest.</p>
+            <div class="stack-row"><span>Python</span><span>KivyMD</span><span>Supabase</span></div>
+            <a class="work-link" href="https://github.com/GabrielHSFeliz/uniforme-app" target="_blank" rel="noopener">Ver repositório →</a>
+          </div>
+        </div>
+
+        <div class="work-card glass">
+          <div class="work-thumb"><span class="glyph">PYTHON · WEB</span><div class="work-play">↗</div></div>
+          <div class="work-body">
+            <h3>uniforme-web</h3>
+            <div class="status-row"><span class="status done">finalizado</span></div>
+            <p>Versão web do app de solicitação de uniformes — a contraparte navegável do app mobile para acesso via desktop.</p>
+            <div class="stack-row"><span>Python</span><span>HTML</span></div>
+            <a class="work-link" href="https://github.com/GabrielHSFeliz/uniforme-web" target="_blank" rel="noopener">Ver repositório →</a>
+          </div>
+        </div>
+
+        <div class="work-card glass">
+          <div class="work-thumb"><span class="glyph">HTML · GRID</span><div class="work-play">↗</div></div>
+          <div class="work-body">
+            <h3>WI de Qualidade</h3>
+            <div class="status-row"><span class="status done">finalizado</span></div>
+            <p>Instrução de Trabalho digital para ICQA, com seções de Insumos e Inventário, publicada como site estático no GRID.</p>
+            <div class="stack-row"><span>HTML</span><span>CSS</span><span>GRID</span></div>
+            <a class="work-link" href="https://github.com/GabrielHSFeliz/WI-Qualidade" target="_blank" rel="noopener">Ver repositório →</a>
+          </div>
+        </div>
+
+        <div class="work-card glass" style="grid-column:span 2;">
+          <div class="work-thumb"><span class="glyph">PYTHON · SQL</span><div class="work-play">↗</div></div>
+          <div class="work-body">
+            <h3>Control Tower Dashboard</h3>
+            <div class="status-row"><span class="status wip">em desenvolvimento</span></div>
+            <p>Dashboard de monitoramento operacional explorando a visão de Control Tower — SQL, indicadores em tempo real e acompanhamento de operação.</p>
+            <div class="stack-row"><span>Python</span><span>SQL</span></div>
+            <a class="work-link" href="https://github.com/GabrielHSFeliz/control-tower-dashboard" target="_blank" rel="noopener">Ver repositório →</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="tech">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="section-num">04 · TECNOLOGIAS</div>
+        <h2 class="section-title">Linguagens & ferramentas</h2>
+        <p class="section-sub">As tecnologias e frameworks que uso para tirar os projetos do papel.</p>
+      </div>
+      <div class="tech-grid">
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/javascript.svg" alt="JavaScript" onerror="this.style.display='none'"><span>JavaScript</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/python.svg" alt="Python" onerror="this.style.display='none'"><span>Python</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/html5.svg" alt="HTML5" onerror="this.style.display='none'"><span>HTML5</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/css3.svg" alt="CSS3" onerror="this.style.display='none'"><span>CSS3</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/googleappsscript.svg" alt="Google Apps Script" onerror="this.style.display='none'"><span>Apps Script</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/googlesheets.svg" alt="Google Sheets" onerror="this.style.display='none'"><span>Google Sheets</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/postgresql.svg" alt="PostgreSQL" onerror="this.style.display='none'"><span>PostgreSQL</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/supabase.svg" alt="Supabase" onerror="this.style.display='none'"><span>Supabase</span></div>
+        <div class="tech-item">
+          <svg class="ic" width="60" height="60" viewBox="0 0 60 60" fill="#ffffff">
+            <polygon points="10,14 28,30 10,46"></polygon>
+            <polygon points="24,14 42,30 24,46"></polygon>
+            <text x="30" y="52" font-family="Space Grotesk, sans-serif" font-size="13" font-weight="700" fill="#ffffff">MD</text>
+          </svg>
+          <span>KivyMD</span>
+        </div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/pytest.svg" alt="pytest" onerror="this.style.display='none'"><span>pytest</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/githubactions.svg" alt="GitHub Actions" onerror="this.style.display='none'"><span>GitHub Actions</span></div>
+        <div class="tech-item"><img class="ic" src="https://cdn.jsdelivr.net/npm/simple-icons@v13/icons/git.svg" alt="Git" onerror="this.style.display='none'"><span>Git</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-card glass">
+        <div class="exp-orb"></div>
+        <div class="section-num" style="justify-content:center; display:flex;">05 · CONTATO</div>
+        <h2>Vamos criar algo juntos?</h2>
+        <p>Aberto a oportunidades como desenvolvedor júnior, com foco em vagas remotas.</p>
+        <div class="contact-links">
+          <a class="btn btn-solid" href="mailto:feliz.gabriel785@gmail.com">Enviar e-mail</a>
+          <a class="btn btn-ghost" href="https://www.linkedin.com/in/gabrielfeliz" target="_blank" rel="noopener">LinkedIn ↗</a>
+          <a class="btn btn-ghost" href="https://github.com/GabrielHSFeliz" target="_blank" rel="noopener">GitHub ↗</a>
+          <a class="btn btn-ghost" href="tel:+5511992686181">(11) 99268-6181</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  © 2026 Gabriel Henrique Santos Feliz — construído com HTML, CSS e JS puro.
+</footer>
+
+</body>
+</html>
